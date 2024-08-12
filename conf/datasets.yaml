@@ -1,0 +1,6 @@
+filepaths: 
+  depmap: "/home/samson/kornhill/data/external/depmap/21q1"
+  cosmic: "data/cosmic_cancer_gene_census_201214.csv"
+  decipher_hits: "data/decipher/decipher_synthetic_essential_categorized.csv"
+  decipher_sl_across: "data/decipher/functions-by-synthetic-essential-gene-partners.csv"
+  

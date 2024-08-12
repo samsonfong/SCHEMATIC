@@ -1,0 +1,3 @@
+[submodule "bin/bagel"]
+	path = bin/bagel
+	url = https://github.com/hart-lab/bagel.git
