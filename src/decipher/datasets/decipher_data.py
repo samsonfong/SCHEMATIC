@@ -27,14 +27,8 @@ class Decipher(object):
         "nsclc": ["A549", "A427"],
         "pan-cancer": ["MDAMB231", "MCF7", "CAL27", "CAL33", "A549", "A427"],
         "KRAS": ["A427", "A549", "MDAMB231"],
-        # "GROUP2": ["MDAMB231", "A549"],
         "POLQ": ["CAL27", "A549"],
-        # "GROUP4": ["CAL27", "A427"],
-        # "GROUP5": ["MCF7", "A427"],
         "PIK3CA": ["MCF7", "CAL33"],
-        # "GROUP7": ["MCF7", "CAL27"],
-        # "GROUP8": ["CAL27", "MCF7", "MDAMB231"],
-        # "GROUP9": ["MCF7", "MDAMB231", "CAL33"],
         "NF2": ["MDAMB231", "CAL33"],
         "TP53": ["CAL27", "MDAMB231", "CAL33"],
         "TP53-wt": ["MCF10A", "MCF7", "A427", "A549"],
@@ -73,8 +67,6 @@ class Decipher(object):
             score_path=self.score_path, which="measured"
         )
 
-        self._score_alternative_model()
-
         self._init_filters()
 
         # Get genes
@@ -99,51 +91,6 @@ class Decipher(object):
 
         self.cov = pd.read_csv(
             self.score_path / "cov/decipher_cov_cov.csv", index_col=[0, 1]
-        )
-
-    def _score_alternative_model(self):
-        (
-            self.cell_line_min_scores,
-            self.cell_line_min_cutoffs,
-        ) = interactions.score_alternative_model(
-            self.fitness.genepair,
-            self.fitness.smf_a,
-            self.fitness.smf_b,
-            self.cell_lines,
-            model="minimum",
-        )
-
-        (
-            self.tissue_min_scores,
-            self.tissue_min_cutoffs,
-        ) = interactions.score_alternative_model(
-            self.fitness.genepair,
-            self.fitness.smf_a,
-            self.fitness.smf_b,
-            self.combo_map,
-            model="minimum",
-        )
-
-        # Scoring by maximum fitness
-        (
-            self.cell_line_max_scores,
-            self.cell_line_max_cutoffs,
-        ) = interactions.score_alternative_model(
-            self.fitness.genepair,
-            self.fitness.smf_a,
-            self.fitness.smf_b,
-            self.cell_lines,
-            model="maximum",
-        )
-        (
-            self.tissue_max_scores,
-            self.tissue_max_cutoffs,
-        ) = interactions.score_alternative_model(
-            self.fitness.genepair,
-            self.fitness.smf_a,
-            self.fitness.smf_b,
-            self.combo_map,
-            model="maximum",
         )
 
     def _init_filters(self):
@@ -249,57 +196,6 @@ class Decipher(object):
             return results
 
         return passing
-
-    # def plot_timecourse(
-    #     self,
-    #     geneA,
-    #     geneB,
-    #     cell_line,
-    #     ax=None,
-    #     colors=None,
-    #     control_by_median=True,
-    #     reps=None,
-    #     **kwargs,
-    # ):
-    #     if reps is None or reps == 1:
-    #         rep1_columns = [
-    #             column
-    #             for column in self.fitness.construct.columns
-    #             if (cell_line in column) and ("_1" in column)
-    #         ]
-
-    #         ax = plot_guidepair(
-    #             self.fitness.construct[rep1_columns],
-    #             geneA,
-    #             geneB,
-    #             control=self.control,
-    #             colors=colors,
-    #             ax=ax,
-    #             control_by_median=control_by_median,
-    #             marker="o",
-    #             **kwargs,
-    #         )
-
-    #     if reps is None or reps == 2:
-    #         rep2_columns = [
-    #             column
-    #             for column in self.fitness.construct.columns
-    #             if (cell_line in column) and ("_2" in column)
-    #         ]
-
-    #         ax = plot_guidepair(
-    #             self.fitness.construct[rep2_columns],
-    #             geneA,
-    #             geneB,
-    #             control=self.control,
-    #             colors=colors,
-    #             ax=ax,
-    #             control_by_median=control_by_median,
-    #             marker="^",
-    #             **kwargs,
-    #         )
-
-    #     return ax
 
     def get_final_timepoints(self):
         """Get the final timepoints for each cell line"""
@@ -455,50 +351,6 @@ def get_data_radiant(data):
     return np.arctan2(
         data[:, 1].max() - data[:, 1].min(), data[:, 0].max() - data[:, 0].min()
     )
-
-
-class SLAcross(object):
-    def __init__(self, sl_across, membership_map, conf=None):
-        self.data = sl_across
-        self.membership_map = membership_map
-
-        if conf is not None:
-            self.parse_conf(conf)
-            self.filter_data()
-
-    @classmethod
-    def from_file(cls, sl_across_file, membership_map, conf_file=None):
-        sl_across_file = "D:/work-vault/2-Projects/decipher/decipher-dvc/data/2_scores/functions-221115/NEST/functions-by-synthetic-essential-gene-partners.csv"
-        sl_across = pd.read_csv(sl_across_file)
-
-        conf = None
-        if conf_file is not None:
-            with open(conf_file) as f:
-                conf = yaml.safe_load(f)
-
-        return cls(sl_across, membership_map, conf=conf)
-
-    def filter_data(self):
-        self.data = self.data.loc[
-            (self.data["fdr"] < self.fdr)
-            & (self.data["ess-binom-fdr"] < self.ess_binom_fdr)
-            & (self.data["stringency"] == self.stringency)
-            & (self.data["subset"] == self.subset)
-            & (self.data["context"] == self.context)
-            & (self.data["condition"].isin(self.conditions))
-        ]
-
-        return self
-
-    def parse_conf(self, conf):
-        self.fdr = conf["fdr"]
-        self.ess_binom_fdr = conf["ess-binom-fdr"]
-        self.stringency = conf["stringency"]
-        self.subset = conf["subset"]
-        self.context = conf["context"]
-        self.conditions = conf["conditions"]
-
-        return self
 
 
 def get_decipher_hits(hits_file):
