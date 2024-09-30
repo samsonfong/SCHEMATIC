@@ -12,6 +12,8 @@ dependencies = [
     "decipher-final",
     "pyyaml>=6.0.2",
     "click>=8.1.7",
+    "matplotlib>=3.7.5",
+    "seaborn>=0.13.2",
 ]
 
 [build-system]
@@ -24,6 +26,7 @@ packages = ["src/decipher"]
 [tool.uv]
 dev-dependencies = [
     "ruff>=0.5.7",
+    "ipykernel>=6.29.5",
 ]
 
 [tool.uv.sources]

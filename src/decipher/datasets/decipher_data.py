@@ -101,13 +101,13 @@ class Decipher(object):
             pd.concat([self.cell_line_scores.fdrs, self.tissue_scores.fdrs], axis=1),
         )
 
-        self.min_filter = Filters(
-            pd.concat([self.cell_line_min_scores, self.tissue_min_scores], axis=1),
-        )
+        # self.min_filter = Filters(
+        #     pd.concat([self.cell_line_min_scores, self.tissue_min_scores], axis=1),
+        # )
 
-        self.max_filter = Filters(
-            pd.concat([self.cell_line_max_scores, self.tissue_max_scores], axis=1),
-        )
+        # self.max_filter = Filters(
+        #     pd.concat([self.cell_line_max_scores, self.tissue_max_scores], axis=1),
+        # )
 
     def filter(
         self,

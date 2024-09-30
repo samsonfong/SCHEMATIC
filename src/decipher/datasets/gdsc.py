@@ -6,10 +6,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind
+from .. import PROJECT_BASE
 
-# DATA_PATH = Path("/home/samson/warehouse/data/external/gdsc").resolve()
-DATA_PATH = Path("D:/data/external/gdsc").resolve()
-
+DATA_PATH = PROJECT_BASE / "data/gdsc"
 
 class GDSC(object):
     """GDSC data"""
